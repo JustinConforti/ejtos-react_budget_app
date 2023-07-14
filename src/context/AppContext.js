@@ -12,6 +12,7 @@ export const AppReducer = (state, action) => {
                 },0
             );
             total_budget = total_budget + action.payload.cost;
+            console.log(total_budget);
             action.type = "DONE";
             if(total_budget <= state.budget) {
                 total_budget = 0;
@@ -30,7 +31,43 @@ export const AppReducer = (state, action) => {
                     ...state
                 }
             }
-            case 'RED_EXPENSE':
+        case 'budget_add':
+                if(state.budget > 19990) {
+                    alert("Cannot increase budget more than 20k")
+                    return {
+                        ...state
+                    }
+                } else {
+                console.log('budget_add triggered');
+                console.log(action.payload.cost);
+                console.log(state.budget);
+                state.budget += action.payload.cost;
+                action.type = "DONE";
+                return {
+                    ...state
+                }
+            }
+        case 'budget_red':
+                console.log('budget_red triggered');
+                console.log(action.payload.cost);
+                console.log(state.budget);
+                state.budget -= action.payload.cost;
+                action.type = "DONE";
+                let total_expenses = 0;
+                total_expenses = state.expenses.reduce(
+                    (previousExp, currentExp) => {
+                        return previousExp + currentExp.cost
+                    },0
+                );
+                if (state.budget < total_expenses) {
+                    alert("Cannot decrease budget more than current spending amount");
+                } else {
+                return {
+                    ...state
+                }
+            }
+            break;
+        case 'RED_EXPENSE':
                 const red_expenses = state.expenses.map((currentExp)=> {
                     if (currentExp.name === action.payload.name && currentExp.cost - action.payload.cost >= 0) {
                         currentExp.cost =  currentExp.cost - action.payload.cost;
@@ -78,7 +115,7 @@ export const AppReducer = (state, action) => {
 
 // 1. Sets the initial state when the app loads
 const initialState = {
-    budget: 2000,
+    budget: 1000,
     expenses: [
         { id: "Marketing", name: 'Marketing', cost: 50 },
         { id: "Finance", name: 'Finance', cost: 300 },
